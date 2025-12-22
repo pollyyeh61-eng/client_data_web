@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # 當您上傳檔案到 main 分支時觸發
+      - main
 
 jobs:
   build:
@@ -14,14 +14,18 @@ jobs:
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.27.0' # 使用穩定版本
-          channel: 'stable'
+          channel: 'stable' # 讓 GitHub 自動抓取最新穩定版，避免版本衝突
 
       - name: Install dependencies
-        run: flutter pub get
+        run: |
+          # 解決 Exit Code 65 的關鍵：強制升級舊套件並重新獲取
+          flutter pub upgrade
+          flutter pub get
 
       - name: Build Web
-        run: flutter build web --release --base-href "/client_data_web/" --web-renderer html
+        run: |
+          # 使用 HTML 渲染器避開 Shader 報錯，並加上寬鬆編譯參數
+          flutter build web --release --base-href "/client_data_web/" --web-renderer html --no-tree-shake-icons
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

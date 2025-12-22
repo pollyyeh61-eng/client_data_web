@@ -17,13 +17,12 @@ jobs:
           channel: 'stable'
 
       - name: Install dependencies
-        run: |
-          flutter pub get
+        run: flutter pub get
 
       - name: Build Web
         run: |
-          # 移除不穩定參數，僅保留核心路徑與渲染器設定
-          flutter build web --release --base-href "/client_data_web/" --web-renderer html
+          # 這是最標準的指令，移除所有可能導致 64 錯誤的額外參數
+          flutter build web --release --base-href "/client_data_web/"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

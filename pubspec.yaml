@@ -1,50 +1,24 @@
-name: Deploy to GitHub Pages
+name: client_data_app3
+description: "A professional Web-based project for customer management."
+publish_to: 'none'
+version: 1.0.0+1
 
-on:
-  push:
-    branches:
-      - main
+environment:
+  sdk: '>=3.0.0 <4.0.0' # 這裡放寬，確保雲端能抓到正確編譯環境
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Install Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          # 調高版本以符合您的 SDK 要求
-          flutter-version: '3.27.0' 
-          channel: 'stable'
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences: ^2.2.2
+  intl: ^0.19.0
+  url_launcher: ^6.3.2
+  web: ^0.5.1
+  cupertino_icons: ^1.0.6
 
-      - name: Install dependencies
-        run: |
-          # 強制忽略 SDK 版本檢查來安裝套件
-          flutter pub get
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
 
-      - name: Build Web
-        run: |
-          flutter build web --release --base-href "/client_data_web/" --web-renderer html --no-tree-shake-icons
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: build/web
-
-  deploy:
-    needs: build
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-    environment:
-      sdk: '>=3.0.0 <4.0.0' # 這裡一定要改成 3.0.0，因為 GitHub 環境有時會切換
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-
+flutter:
+  uses-material-design: true

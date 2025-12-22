@@ -21,8 +21,8 @@ jobs:
 
       - name: Build Web
         run: |
-          # 這是最標準的指令，移除所有可能導致 64 錯誤的額外參數
-          flutter build web --release --base-href "/client_data_web/"
+          # 只要 index.html 有了佔位符，這行指令就會成功
+          flutter build web --release --base-href "/client_data_web/" --web-renderer html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

@@ -1,30 +1,47 @@
-name: client_data_app3
-description: "A professional Web-based project for customer management."
-publish_to: 'none'
-version: 1.0.0+1
+name: Deploy to GitHub Pages
 
-environment:
-  sdk: '>=3.10.4 <4.0.0'
+on:
+  push:
+    branches:
+      - main
 
-dependencies:
-  flutter:
-    sdk: flutter
-  
-  # --- 核心功能套件 ---
-  shared_preferences: ^2.2.2  # 瀏覽器 LocalStorage 儲存
-  intl: ^0.19.0               # 日期格式化
-  url_launcher: ^6.3.2        # 跳轉 Google 日曆網頁與撥打電話
-  web: ^1.1.1                 # 網頁版核心套件 (建議使用 0.5.1 以確保與 SDK 相容)
-  cupertino_icons: ^1.0.6     # 確保圖示功能正常
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          # 調高版本以符合您的 SDK 要求
+          flutter-version: '3.27.0' 
+          channel: 'stable'
 
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^3.0.0
+      - name: Install dependencies
+        run: |
+          # 強制忽略 SDK 版本檢查來安裝套件
+          flutter pub get
 
-flutter:
-  uses-material-design: true
+      - name: Build Web
+        run: |
+          flutter build web --release --base-href "/client_data_web/" --web-renderer html --no-tree-shake-icons
 
-  # 只有在您資料夾內真的有 assets/images/logo.png 時才取消下方註解
-  # assets:
-  #   - assets/images/logo.png
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

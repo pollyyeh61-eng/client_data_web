@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:intl/intl.dart';
-import 'dart:js_interop'; // 加入這個有助於相容性
-import 'dart:html' as html;
 import 'package:url_launcher/url_launcher.dart';
+
+// 網頁版專用：使用最新 package:web 避開舊版 dart:html 的刪除線與編譯錯誤
+import 'package:web/web.dart' as web;
+import 'dart:js_interop'; 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -90,8 +92,9 @@ class _CustomerFormPageState extends State<CustomerFormPage> {
     final String dateFormatted = customer.nextDate.replaceAll(RegExp(r'[- : ]'), '');
     final String url = "https://www.google.com/calendar/render?action=TEMPLATE&text=$title&details=$desc&dates=${dateFormatted}00/${dateFormatted}00";
     
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url));
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
     }
   }
 
@@ -110,7 +113,6 @@ class _CustomerFormPageState extends State<CustomerFormPage> {
     String serviceLog = _currentServiceController.text.trim();
     String newLog = "$today: ${serviceLog.isEmpty ? '無紀錄' : serviceLog}";
     
-    // 使用 late 解決編譯錯誤，確保在 if/else 中都會賦值
     late Customer currentCustomer;
     int index = allList.indexWhere((c) => c.name == name);
     
@@ -262,27 +264,31 @@ class _CustomerListPageState extends State<CustomerListPage> {
     setState(() => list = saved.map((s) => Customer.fromJson(jsonDecode(s))).toList());
   }
 
+  // --- 修正後的網頁下載功能 ---
   void _downloadBackup() {
     if (list.isEmpty) return;
     String content = "客戶資料完整備份\n匯出時間: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now())}\n" + "="*40 + "\n";
     for (var c in list) {
       content += "\n【${c.name}】\n電話：${c.phone}\n血型：${c.bloodType} | 星座：${c.constellation}\n備註：${c.note}\n歷史服務：\n${c.historyLogs.join('\n')}\n" + "-"*30 + "\n";
     }
+
+    // 使用最新 package:web 語法進行下載
     final bytes = utf8.encode(content);
-    final blob = html.Blob([bytes]);
-    final url = html.Url.createObjectUrlFromBlob(blob);
-    html.AnchorElement(href: url)
-      ..setAttribute("download", "customer_data_backup.txt")
-      ..click();
-    html.Url.revokeObjectUrl(url);
+    final blob = web.Blob([bytes.toJS].toJS, web.BlobPropertyBag(type: 'text/plain'));
+    final url = web.URL.createObjectURL(blob);
+    
+    final anchor = web.document.createElement('a') as web.HTMLAnchorElement;
+    anchor.href = url;
+    anchor.download = "customer_data_backup.txt";
+    anchor.click();
+    
+    web.URL.revokeObjectURL(url);
   }
 
   void _editCustomer(Customer oldData) {
-    final _ePhone = TextEditingController(text: oldData.phone);
-    final _eNote = TextEditingController(text: oldData.note);
-    final _eHistory = TextEditingController(text: oldData.historyLogs.join('\n'));
-    String? _eBlood = oldData.bloodType.isEmpty ? null : oldData.bloodType;
-    String? _eZodiac = oldData.constellation.isEmpty ? null : oldData.constellation;
+    final ePhone = TextEditingController(text: oldData.phone);
+    final eNote = TextEditingController(text: oldData.note);
+    final eHistory = TextEditingController(text: oldData.historyLogs.join('\n'));
 
     showDialog(
       context: context,
@@ -294,12 +300,12 @@ class _CustomerListPageState extends State<CustomerListPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                TextField(controller: _ePhone, decoration: const InputDecoration(labelText: '修改電話')),
+                TextField(controller: ePhone, decoration: const InputDecoration(labelText: '修改電話')),
                 const SizedBox(height: 15),
-                TextField(controller: _eNote, maxLines: 3, decoration: const InputDecoration(labelText: '修改備註', border: OutlineInputBorder())),
+                TextField(controller: eNote, maxLines: 3, decoration: const InputDecoration(labelText: '修改備註', border: OutlineInputBorder())),
                 const SizedBox(height: 15),
                 const Align(alignment: Alignment.centerLeft, child: Text("歷史紀錄編輯 (每行一筆)：")),
-                TextField(controller: _eHistory, maxLines: 10, decoration: const InputDecoration(border: OutlineInputBorder(), hintText: "2025-01-01: 內容")),
+                TextField(controller: eHistory, maxLines: 10, decoration: const InputDecoration(border: OutlineInputBorder(), hintText: "2025-01-01: 內容")),
               ],
             ),
           ),
@@ -312,11 +318,12 @@ class _CustomerListPageState extends State<CustomerListPage> {
               int idx = list.indexWhere((c) => c.name == oldData.name);
               if (idx != -1) {
                 setState(() {
-                  list[idx].phone = _ePhone.text.trim();
-                  list[idx].note = _eNote.text.trim();
-                  list[idx].historyLogs = _eHistory.text.split('\n').where((s) => s.trim().isNotEmpty).toList();
+                  list[idx].phone = ePhone.text.trim();
+                  list[idx].note = eNote.text.trim();
+                  list[idx].historyLogs = eHistory.text.split('\n').where((s) => s.trim().isNotEmpty).toList();
                 });
                 await prefs.setStringList('all_customers', list.map((c) => jsonEncode(c.toJson())).toList());
+                if (!mounted) return;
                 Navigator.pop(ctx);
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("已更新資料")));
               }

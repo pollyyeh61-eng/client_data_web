@@ -14,10 +14,8 @@ dependencies:
   shared_preferences: ^2.2.2  # 瀏覽器 LocalStorage 儲存
   intl: ^0.19.0               # 日期格式化
   url_launcher: ^6.3.2        # 跳轉 Google 日曆網頁與撥打電話
-  web: ^1.1.1
-  
-  # 說明：網頁版檔案下載已在 Dart 程式碼內透過 dart:html 實現，
-  # 故不再需要 path_provider, share_plus 或 csv 套件。
+  web: ^1.1.1                 # 網頁版核心套件 (建議使用 0.5.1 以確保與 SDK 相容)
+  cupertino_icons: ^1.0.6     # 確保圖示功能正常
 
 dev_dependencies:
   flutter_test:
@@ -27,6 +25,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # 如果您有 Logo，請確保檔案存在；若暫時沒有，可先將此段註解掉
-  assets:
-    - assets/images/logo.png
+  # 只有在您資料夾內真的有 assets/images/logo.png 時才取消下方註解
+  # assets:
+  #   - assets/images/logo.png

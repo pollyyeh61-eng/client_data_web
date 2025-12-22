@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0' # 這裡放寬，確保雲端能抓到正確編譯環境
+  sdk: '>=3.2.0 <4.0.0' # 這裡與 GitHub Actions 的版本對齊
 
 dependencies:
   flutter:
@@ -12,7 +12,7 @@ dependencies:
   shared_preferences: ^2.2.2
   intl: ^0.19.0
   url_launcher: ^6.3.2
-  web: ^0.5.1
+  # 關鍵修正：暫時移除 web 套件的強行指定，讓 Flutter 自動處理相容性
   cupertino_icons: ^1.0.6
 
 dev_dependencies:

@@ -21,8 +21,8 @@ jobs:
 
       - name: Build Web
         run: |
-          # 只要 index.html 有了佔位符，這行指令就會成功
-          flutter build web --release --base-href "/client_data_web/" --web-renderer html
+          # 徹底移除所有參數，只保留最核心的 base-href
+          flutter build web --release --base-href "/client_data_web/"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

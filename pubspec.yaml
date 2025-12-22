@@ -1,0 +1,32 @@
+name: client_data_app3
+description: "A professional Web-based project for customer management."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.10.4 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # --- 核心功能套件 ---
+  shared_preferences: ^2.2.2  # 瀏覽器 LocalStorage 儲存
+  intl: ^0.19.0               # 日期格式化
+  url_launcher: ^6.3.2        # 跳轉 Google 日曆網頁與撥打電話
+  web: ^1.1.1
+  
+  # 說明：網頁版檔案下載已在 Dart 程式碼內透過 dart:html 實現，
+  # 故不再需要 path_provider, share_plus 或 csv 套件。
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  # 如果您有 Logo，請確保檔案存在；若暫時沒有，可先將此段註解掉
+  assets:
+    - assets/images/logo.png

@@ -16,17 +16,14 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Force Clean and Resolve
+      - name: Install dependencies
         run: |
-          # 徹底刪除可能導致 255 錯誤的鎖定檔與快取
-          rm -f pubspec.lock
-          flutter clean
           flutter pub get
 
       - name: Build Web
         run: |
-          # 使用最穩定的渲染模式編譯
-          flutter build web --release --base-href "/client_data_web/" --web-renderer html --no-tree-shake-icons
+          # 移除不穩定參數，僅保留核心路徑與渲染器設定
+          flutter build web --release --base-href "/client_data_web/" --web-renderer html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

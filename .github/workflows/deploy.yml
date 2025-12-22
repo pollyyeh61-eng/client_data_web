@@ -14,17 +14,18 @@ jobs:
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable' # 讓 GitHub 自動抓取最新穩定版，避免版本衝突
+          channel: 'stable'
 
-      - name: Install dependencies
+      - name: Force Clean and Resolve
         run: |
-          # 解決 Exit Code 65 的關鍵：強制升級舊套件並重新獲取
-          flutter pub upgrade
+          # 徹底刪除可能導致 255 錯誤的鎖定檔與快取
+          rm -f pubspec.lock
+          flutter clean
           flutter pub get
 
       - name: Build Web
         run: |
-          # 使用 HTML 渲染器避開 Shader 報錯，並加上寬鬆編譯參數
+          # 使用最穩定的渲染模式編譯
           flutter build web --release --base-href "/client_data_web/" --web-renderer html --no-tree-shake-icons
 
       - name: Upload artifact

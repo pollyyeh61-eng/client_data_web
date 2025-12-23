@@ -1,21 +1,18 @@
-<script>
-    window.addEventListener('load', function(ev) {
-      _flutter.loader.loadEntrypoint({
-        // 移除 serviceWorker 區塊，避免強制快取
-        onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
-            appRunner.runApp();
-            
-            // 成功運行後移除啟動圖
-            setTimeout(function() {
-              var loader = document.getElementById('loading-indicator');
-              if (loader) {
-                loader.style.opacity = "0";
-                setTimeout(function() { loader.remove(); }, 500);
-              }
-            }, 400); 
-          });
-        }
-      });
-    });
-  </script>
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  
+  <link rel="apple-touch-icon" href="icons/logo.png">
+  <link rel="icon" type="image/png" href="icons/logo.png">
+  <link rel="manifest" href="manifest.json">
+
+  <title>客戶管理系統</title>
+  
+  <style>
+    /* 這裡放您之前的啟動畫面 CSS */
+  </style>
+</head>

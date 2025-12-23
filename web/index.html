@@ -54,28 +54,28 @@
   <script>
     window.addEventListener('load', function(ev) {
       // 載入 Flutter 入口點
-      _flutter.loader.loadEntrypoint({
-        serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
-        },
-        onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
-            appRunner.runApp();
-            
-            // 關鍵：當 App 開始運行後，移除啟動畫面
-            setTimeout(function() {
-              var loader = document.getElementById('loading-indicator');
-              if (loader) {
-                loader.style.transition = "opacity 0.5s ease";
-                loader.style.opacity = "0";
-                setTimeout(function() { loader.remove(); }, 500);
-              }
-            }, 500);
-          });
+     _flutter.loader.loadEntrypoint({
+  onEntrypointLoaded: function(engineInitializer) {
+    engineInitializer.initializeEngine().then(function(appRunner) {
+      appRunner.runApp();
+      
+      // 確保 Flutter 啟動後才移除啟動圖
+      setTimeout(function() {
+        var loader = document.getElementById('loading-indicator');
+        if (loader) {
+          loader.style.transition = "opacity 0.5s ease";
+          loader.style.opacity = "0";
+          setTimeout(function() { loader.remove(); }, 500);
+        }
+      }, 200);
+    });
+  }
+});
         }
       });
     });
   </script>
 </body>
 </html>
+
 

@@ -1,93 +1,21 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <base href="$FLUTTER_BASE_HREF">
-
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="客戶管理系統">
-
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="客戶管理">
-  <link rel="apple-touch-icon" href="icons/logo.png">
-
-  <link rel="icon" type="image/png" href="icons/logo.png">
-
-  <title>客戶管理系統</title>
-  <link rel="manifest" href="manifest.json">
-
-  <style>
-    /* 啟動畫面背景與容器 */
-    .loading-container {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      background-color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      transition: opacity 0.5s ease;
-    }
-
-    /* Logo 動畫 */
-    .loading-logo {
-      width: 120px;
-      height: 120px;
-      animation: pulse 2s infinite ease-in-out;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(0.95); opacity: 0.7; }
-      50% { transform: scale(1.05); opacity: 1; }
-      100% { transform: scale(0.95); opacity: 0.7; }
-    }
-
-    .loading-text {
-      margin-top: 20px;
-      font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
-      color: #666;
-      font-size: 16px;
-    }
-  </style>
-</head>
-<body>
-  <div id="loading-indicator" class="loading-container">
-    <img class="loading-logo" src="icons/logo.png" alt="Logo">
-    <div class="loading-text">系統載入中...</div>
-  </div>
-
-  <script src="flutter_bootstrap.js" async></script>
-  
-  <script>
+<script>
     window.addEventListener('load', function(ev) {
-      // 載入 Flutter 入口點
       _flutter.loader.loadEntrypoint({
-        serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
-        },
+        // 移除 serviceWorker 區塊，避免強制快取
         onEntrypointLoaded: function(engineInitializer) {
           engineInitializer.initializeEngine().then(function(appRunner) {
             appRunner.runApp();
             
-            // 成功運行 App 後，平滑地移除啟動畫面
+            // 成功運行後移除啟動圖
             setTimeout(function() {
               var loader = document.getElementById('loading-indicator');
               if (loader) {
                 loader.style.opacity = "0";
-                setTimeout(function() {
-                  loader.remove();
-                }, 500);
+                setTimeout(function() { loader.remove(); }, 500);
               }
-            }, 400); // 這裡的 400ms 是為了確保畫面轉場不突兀
+            }, 400); 
           });
         }
       });
     });
   </script>
-</body>
-</html>
